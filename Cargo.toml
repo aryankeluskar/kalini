@@ -1,0 +1,6 @@
+[package]
+name = "kalini"
+version = "0.1.0"
+authors = ["Aryan Keluskar <aryankeluskar6@gmail.com>"]
+
+[dependencies]
