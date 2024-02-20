@@ -5,6 +5,7 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
+   println!("Updated");
    let current_dir = match env::current_dir() {
       Ok(dir) => dir,
       Err(err) => {
@@ -13,7 +14,32 @@ fn main() {
       }
    };
 
-   let pre_commit_path = current_dir.join(".git/hooks/pre-commit");
+   let pre_commit_path = current_dir.join("pre-commit");
+
+    // Change the permissions of the pre-commit file
+    let perm_change = Command::new("chmod")
+        .arg("+x")
+        .arg(&pre_commit_path)
+        .output();
+
+    match perm_change {
+        Ok(output) => {
+            if output.status.success() {
+                println!("Permissions changed successfully");
+            } else {
+                println!(
+                    "Failed to change permissions of pre-commit file: {}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                return;
+            }
+        }
+        Err(err) => {
+            println!("Failed to execute chmod: {}", err);
+            return;
+        }
+    }
+
 
    let mut pre_commit_file = match OpenOptions::new().append(true).open(pre_commit_path) {
       Ok(file) => file,
@@ -57,3 +83,4 @@ fn main() {
       Err(err) => println!("Failed to check pipreqs installation: {}", err),
    }
 }
+
